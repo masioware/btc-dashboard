@@ -87,7 +87,7 @@ def render_sentiment_tab(
         if not fng_df.empty:
             chart_df = fng_df[["date", "value"]].set_index("date")
             st.line_chart(chart_df, height=260)
-            st.caption("Fonte: https://api.alternative.me/fng/")
+            st.caption("Fonte: api.alternative.me/fng/")
 
             fng_min = fng_df["value"].min()
             fng_max = fng_df["value"].max()
@@ -124,8 +124,6 @@ def render_sentiment_tab(
             )
         else:
             st.write("Sem dados para mostrar.")
-
-    st.markdown("---")
 
 def render_price_x_sentiment(
     fng_df: pd.DataFrame,

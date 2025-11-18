@@ -10,7 +10,8 @@ requires-python = ">=3.12"
 dependencies = [
     "streamlit (>=1.51.0,<2.0.0)",
     "requests (>=2.32.5,<3.0.0)",
-    "pandas (>=2.3.3,<3.0.0)"
+    "pandas (>=2.3.3,<3.0.0)",
+    "streamlit-autorefresh (>=1.0.1,<2.0.0)"
 ]
 
 

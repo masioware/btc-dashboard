@@ -4,6 +4,8 @@ from __future__ import annotations
 import time
 
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
+
 from api import alternative_me, binance, coin_gecko
 from components.metrics import inject_metric_css, render_metric_card
 from components.tabs import (
@@ -75,20 +77,23 @@ with st.sidebar:
         step=1,
     )
 
-    auto_refresh = st.checkbox("Atualização automática (a cada 60s)", value=False)
+    auto_refresh = st.checkbox(
+        "Atualização automática (a cada 60s)", value=False
+    )
+
     if auto_refresh:
-        st.caption("A página será recarregada automaticamente a cada ~60 segundos.")
-        time.sleep(60)
-        st.rerun()
+        # dispara um rerun a cada 60.000 ms (60s) sem bloquear a execução
+        st_autorefresh(
+            interval=60_000,   # milissegundos
+            key="btc_dashboard_autorefresh",
+        )
 
     st.markdown("---")
     st.markdown("**APIs usadas:**")
-    st.code(
-        "Binance: /api/v3/ticker/24hr\n"
-        "Binance: /api/v3/klines (interval=1d)\n"
-        "CoinGecko: /api/v3/coins/bitcoin/simple/price\n"
-        "CoinGecko: /api/v3/coins/bitcoin/market_chart\n"
-        "Alternative.me: /fng/"
+    st.markdown(
+        "- Binance\n"
+        "- CoinGecko\n"
+        "- Alternative.me\n"
     )
 
 # -----------------------
