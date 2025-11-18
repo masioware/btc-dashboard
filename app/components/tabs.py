@@ -8,7 +8,7 @@ import altair as alt
 
 def render_price_tab(price_df: pd.DataFrame, price_days: int) -> None:
     """Renderiza a aba de Preço (gráfico + tabela)."""
-    st.subheader("BTC/USDT – preço diário (Binance)")
+    st.subheader("BTC/USDT – preço diário")
 
     if price_df is None or price_df.empty:
         st.info("Sem dados de preço diário para exibir o gráfico.")
@@ -21,7 +21,6 @@ def render_price_tab(price_df: pd.DataFrame, price_days: int) -> None:
     # ---- Gráfico ----
     with col_price_left:
         st.line_chart(chart_price_df, height=320)
-        st.caption("Fonte: Binance /api/v3/klines (interval=1d)")
 
         price_min = chart_price_df["close"].min()
         price_max = chart_price_df["close"].max()
@@ -185,19 +184,7 @@ def render_price_x_sentiment(
         st.altair_chart(chart, width="stretch")
 
         st.caption(
-            "Linha azul: preço BTC/USDT (Binance) · Linha tracejada laranja: índice Crypto Fear & Greed"
+            "Linha azul: preço BTC/USDT · Linha tracejada laranja: índice Crypto Fear & Greed"
         )
     else:
         st.info("Não há dados suficientes para montar o overlay Preço × FNG.")
-
-
-def render_debug_tab(ticker: dict, fng_df: pd.DataFrame) -> None:
-    """Renderiza a aba de debug com JSON bruto."""
-    st.subheader("Debug / JSON bruto")
-
-    with st.expander("Binance /api/v3/ticker/24hr (BTCUSDT)"):
-        st.json(ticker)
-
-    if not fng_df.empty:
-        with st.expander("Alternative.me /fng (últimas linhas)"):
-            st.write(fng_df.tail(10))

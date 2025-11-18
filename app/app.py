@@ -4,10 +4,9 @@ from __future__ import annotations
 import time
 
 import streamlit as st
-from api import alternative_me, binance
+from api import alternative_me, binance, coin_gecko
 from components.metrics import inject_metric_css, render_metric_card
 from components.tabs import (
-    render_debug_tab,
     render_price_tab,
     render_sentiment_tab,
     render_price_x_sentiment
@@ -31,28 +30,26 @@ inject_metric_css()
 # -----------------------
 # Funções com cache
 # -----------------------
-@st.cache_data(ttl=60)
-def load_ticker():
-    """Carrega ticker 24h da Binance (BTCUSDT)."""
-    return binance.get_ticker_24h("BTCUSDT")
-
-
 @st.cache_data(ttl=300)
 def load_fng(days: int):
     """Carrega Fear & Greed da Alternative.me."""
     return alternative_me.get_fng(limit=days)
 
 
+@st.cache_data(ttl=60)
+def load_ticker():
+    try:
+        return binance.get_ticker_24h("BTCUSDT")
+    except Exception:
+        return coin_gecko.get_ticker_24h("BTCUSDT")
+
+
 @st.cache_data(ttl=300)
 def load_price_klines(days: int):
-    """
-    Carrega candles diários (OHLCV) da Binance.
-
-    Usa binance.get_daily_klines(symbol="BTCUSDT", limit=days)
-    e espera colunas: open_time, open, high, low, close, volume.
-    """
-    return binance.get_daily_klines(symbol="BTCUSDT", limit=days)
-
+    try:
+        return binance.get_daily_klines(symbol="BTCUSDT", limit=days)
+    except Exception:
+        return coin_gecko.get_daily_klines(symbol="BTCUSDT", limit=days)
 
 # -----------------------
 # UI – Sidebar
@@ -63,7 +60,7 @@ with st.sidebar:
     st.header("⚙️ Configurações")
 
     price_days = st.slider(
-        "Dias de histórico de preço (Binance)",
+        "Dias de histórico de preço",
         min_value=30,
         max_value=365,
         value=365,
@@ -89,6 +86,8 @@ with st.sidebar:
     st.code(
         "Binance: /api/v3/ticker/24hr\n"
         "Binance: /api/v3/klines (interval=1d)\n"
+        "CoinGecko: /api/v3/coins/bitcoin/simple/price\n"
+        "CoinGecko: /api/v3/coins/bitcoin/market_chart\n"
         "Alternative.me: /fng/"
     )
 
@@ -208,8 +207,8 @@ with col4:
 # -----------------------
 # Abas
 # -----------------------
-tab_preco, tab_sentimento, tab_preco_x_sentimento, tab_debug = st.tabs(
-    ["📈 Preço (Binance)", "🧠 Sentimento (Fear & Greed)", "🤑 Preço x Sentimento", "🔍 Debug"]
+tab_preco, tab_sentimento, tab_preco_x_sentimento = st.tabs(
+    ["📈 Preço", "🧠 Sentimento (Fear & Greed)", "🤑 Preço x Sentimento"]
 )
 
 with tab_preco:
@@ -222,9 +221,6 @@ with tab_sentimento:
         current_fng=current_fng,
         current_fng_class=current_fng_class,
     )
-
-with tab_debug:
-    render_debug_tab(ticker=ticker, fng_df=fng_df)
 
 with tab_preco_x_sentimento:
     render_price_x_sentiment(

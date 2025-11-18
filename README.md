@@ -1,7 +1,7 @@
 
 # 🟠 BTC Dashboard – Streamlit
 
-Monitor de mercado em tempo real usando **Binance** + **Crypto Fear & Greed Index (Alternative.me)**  
+Monitor de mercado em tempo real usando **Binance** / **CoinGecko** + **Crypto Fear & Greed Index (Alternative.me)**  
 Inclui:
 
 - Preços do BTC/USDT  
@@ -32,7 +32,7 @@ Inclui:
 - **Pandas**
 - **Altair**
 - **Requests**
-- **Binance REST API**
+- **Binance/CoinGecko REST API**
 - **Alternative.me Fear & Greed API**
 
 ---
@@ -43,8 +43,9 @@ Inclui:
 app/
 │
 ├── api/
-│   ├── binance.py              # Preços + klines
 │   └── alternative_me.py       # Fear & Greed Index
+│   ├── binance.py              # Preços + klines
+│   ├── coin_gecko.py           # Preços + klines
 │
 ├── components/
 │   ├── metrics.py              # Cards coloridos + CSS
@@ -67,6 +68,16 @@ app/
 
 **Klines (Preço diário)**  
 `GET https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=365`
+
+---
+
+### 📈 **CoinGecko API**
+
+**Ticker 24h**  
+`GET https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_24hr_high_low=true`
+
+**Klines (Preço diário)**  
+`GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365&interval=daily`
 
 ---
 
